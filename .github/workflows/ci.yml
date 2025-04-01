@@ -26,7 +26,8 @@ jobs:
           echo 'echo "$CI_BOT_PAT"' > ~/.git-askpass
           chmod 500 ~/.git-askpass
           git config --global core.askPass "$HOME"/.git-askpass
-      - uses: cachix/cachix-action@v15
+      # v16
+      - uses: cachix/cachix-action@0fc020193b5a1fa3ac4575aa3a7d3aa6a35435ad
         with:
           name: veridise-public
           authToken: '${{ secrets.CACHIX_PUBLIC_TOKEN }}'
