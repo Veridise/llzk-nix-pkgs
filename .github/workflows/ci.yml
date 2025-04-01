@@ -30,7 +30,6 @@ jobs:
         with:
           name: veridise-public
           authToken: '${{ secrets.CACHIX_PUBLIC_TOKEN }}'
-          pushFilter: '(-source$)'
       - name: Build
         run: nix --print-build-logs build '.#checks.x86_64-linux.using-mlir'
         env:
