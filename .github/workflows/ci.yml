@@ -32,8 +32,3 @@ jobs:
           authToken: '${{ secrets.CACHIX_PUBLIC_TOKEN }}'
       - name: Build
         run: nix --print-build-logs flake check
-        env:
-          CI_BOT_PAT: "${{ secrets.CI_BUILD_TOKEN }}"
-      - name: Clear Git credentials
-        if: "${{ always() }}"
-        run: rm -rf "~/.git-askpass"
