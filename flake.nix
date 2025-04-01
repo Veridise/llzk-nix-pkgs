@@ -11,7 +11,8 @@
       }) final;
 
       mlir = final.llzk_llvmPackages.mlir;
-
+      libllvm = final.llzk_llvmPackages.libllvm;
+      llvm = final.llzk_llvmPackages.llvm;
     };
   } // (flake-utils.lib.eachDefaultSystem (system:
     let
@@ -22,7 +23,7 @@
     in
     {
       packages = flake-utils.lib.flattenTree {
-        inherit (pkgs.llzk_llvmPackages) mlir;
+        inherit (pkgs.llzk_llvmPackages) mlir libllvm llvm;
       };
 
       formatter = pkgs.nixpkgs-fmt;
