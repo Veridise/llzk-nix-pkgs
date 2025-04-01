@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v27
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.23.3/install
+          github_access_token: "${{ secrets.CI_BUILD_TOKEN }}"
+      - name: Set Git credentials
+        run: |
+          git config --global 'url.https://api@github.com/'.insteadOf 'https://github.com/'
+          git config --global 'url.https://ssh@github.com/'.insteadOf 'ssh://git@github.com/'
+          git config --global 'url.https://git@github.com/'.insteadOf 'git@github.com:'
+          echo 'echo "$CI_BOT_PAT"' > ~/.git-askpass
+          chmod 500 ~/.git-askpass
+          git config --global core.askPass "$HOME"/.git-askpass
+      - uses: cachix/cachix-action@v15
+        with:
+          name: veridise-public
+          authToken: '${{ secrets.CACHIX_PUBLIC_TOKEN }}'
+          pushFilter: '(-source$)'
+      - name: Build
+        run: nix --print-build-logs build '.#checks.x86_64-linux.using-mlir'
+        env:
+          CI_BOT_PAT: "${{ secrets.CI_BUILD_TOKEN }}"
+      - name: Clear Git credentials
+        if: "${{ always() }}"
+        run: rm -rf "~/.git-askpass"
