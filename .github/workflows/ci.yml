@@ -31,7 +31,7 @@ jobs:
           name: veridise-public
           authToken: '${{ secrets.CACHIX_PUBLIC_TOKEN }}'
       - name: Build
-        run: nix --print-build-logs build '.#checks.x86_64-linux.using-mlir'
+        run: nix --print-build-logs flake check
         env:
           CI_BOT_PAT: "${{ secrets.CI_BUILD_TOKEN }}"
       - name: Clear Git credentials
