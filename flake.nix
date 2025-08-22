@@ -8,7 +8,7 @@
     overlays.default = final: prev: {
 
       llzk_llvmPackages = (import ./packages/llzk_llvm/default.nix {
-        llvmPackages = final.llvmPackages_18;
+        llvmPackages = final.llvmPackages_20;
       }) final;
 
       mlir = final.llzk_llvmPackages.mlir;
