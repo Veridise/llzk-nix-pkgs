@@ -58,6 +58,7 @@ stdenv.mkDerivation rec {
     "-DLLVM_INSTALL_TOOLCHAIN_ONLY=OFF"
     "-DLLVM_INSTALL_PACKAGE_DIR=${placeholder "dev"}/lib/cmake/llvm"
     "-DMLIR_INSTALL_PACKAGE_DIR=${placeholder "dev"}/lib/cmake/mlir"
+    "-DMLIR_INSTALL_CMAKE_DIR=${placeholder "dev"}/lib/cmake/mlir"
     "-DMLIR_TOOLS_INSTALL_DIR=${placeholder "out"}/bin/"
 
     # Since we exclude the llvm/CMakeLists.txt file, we need to manually set
@@ -76,10 +77,13 @@ stdenv.mkDerivation rec {
     "-DMLIR_STANDALONE_BUILD=TRUE"
     "-DLLVM_TARGETS_TO_BUILD=host"
     "-DLLVM_ENABLE_DUMP=ON"
+    "-DMLIR_TABLEGEN_EXE=${buildLlvmTools.tblgen}/bin/mlir-tblgen"
+    "-DLLVM_TABLEGEN_EXE=${buildLlvmTools.tblgen}/bin/llvm-tblgen"
 
   ] ++ lib.optionals enablePythonBindings [
     # Enable Python bindings
     "-DMLIR_ENABLE_BINDINGS_PYTHON=ON"
+    "-DMLIR_BUILD_MLIR_C_DYLIB=ON"
     "-DPython3_EXECUTABLE=${python3}/bin/python"
     "-DPython3_NumPy_INCLUDE_DIR=${python3.pkgs.numpy}/${python3.sitePackages}/numpy/core/include"
     # ] ++ lib.optionals enableManpages [
@@ -88,13 +92,11 @@ stdenv.mkDerivation rec {
     #   "-DSPHINX_OUTPUT_MAN=ON"
     #   "-DSPHINX_OUTPUT_HTML=OFF"
     #   "-DSPHINX_WARNINGS_AS_ERRORS=OFF"
-  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "-DMLIR_TABLEGEN_EXE=${buildLlvmTools.mlir}/bin/mlir-tblgen"
-    "-DLLVM_TABLEGEN_EXE=${buildLlvmTools.llvm}/bin/llvm-tblgen"
   ];
 
   patches = [
     ./gnu-install-dirs.patch
+    ./tablegen-deps.patch
   ];
 
   outputs = [ "out" "lib" "dev" ] ++ lib.optionals enablePythonBindings [ "python" ];
