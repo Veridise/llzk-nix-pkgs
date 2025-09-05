@@ -10,10 +10,9 @@
 , fixDarwinDylibNames
 , version
 , enableShared ? !stdenv.hostPlatform.isStatic
-, debugVersion ? false
+, cmakeBuildType ? "Release"
 , enablePythonBindings ? false
 , buildLlvmTools
-
 , libxml2
 , libllvm
 }:
@@ -53,7 +52,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DCMAKE_CXX_STANDARD=17"
-    "-DCMAKE_BUILD_TYPE=${if debugVersion then "Debug" else "Release"}"
+    "-DCMAKE_BUILD_TYPE=${cmakeBuildType}"
     # See mlir/cmake/modules/CMakeLists.txt
     "-DLLVM_INSTALL_TOOLCHAIN_ONLY=OFF"
     "-DLLVM_INSTALL_PACKAGE_DIR=${placeholder "dev"}/lib/cmake/llvm"
@@ -127,5 +126,6 @@ stdenv.mkDerivation rec {
   passthru = {
     hasPythonBindings = enablePythonBindings;
     inherit pythonDeps;
+    inherit cmakeBuildType;
   };
 }
