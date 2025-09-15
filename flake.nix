@@ -13,7 +13,7 @@
 
       llzk_llvmPackages_debug = (import ./packages/llzk_llvm/default.nix {
         llvmPackages = final.llvmPackages_20;
-        cmakeBuildType = "RelWithDebInfo";
+        cmakeBuildType = "Debug";
       }) final;
 
       mlir = final.llzk_llvmPackages.mlir;
