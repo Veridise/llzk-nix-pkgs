@@ -4,10 +4,7 @@
 let
   mkPackageBase = pkgs: {
     tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
-      libllvm = (tpkgsOld.libllvm.override ({
-        # Skip tests since they take a long time to build and run
-        doCheck = false;
-      })).overrideAttrs (attrs: {
+      libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
           "-DLLVM_TARGETS_TO_BUILD=host"
@@ -22,6 +19,8 @@ let
           "-DLLVM_ENABLE_Z3_SOLVER=ON"
         ];
         propagatedBuildInputs = attrs.propagatedBuildInputs ++ [pkgs.z3];
+        # Skip tests since they take a long time to build and run
+        doCheck = false;
       });
 
       mlir = pkgs.callPackage ./mlir/default.nix {
