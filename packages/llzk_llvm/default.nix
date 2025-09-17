@@ -1,4 +1,5 @@
 { llvmPackages
+, cmakeBuildType ? "Release"
 }:
 
 let
@@ -8,6 +9,7 @@ let
         # Skip tests since they take a long time to build and run
         doCheck = false;
       })).overrideAttrs (attrs: {
+        inherit cmakeBuildType;
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
           "-DLLVM_TARGETS_TO_BUILD=host"
@@ -22,15 +24,17 @@ let
           "-DLLVM_ENABLE_Z3_SOLVER=ON"
         ];
         propagatedBuildInputs = attrs.propagatedBuildInputs ++ [pkgs.z3];
+        postInstall = pkgs.lib.optionalString (cmakeBuildType != "Release") ''
+          ln -s $dev/lib/cmake/llvm/LLVMExports-${pkgs.lib.toLower cmakeBuildType}.cmake $dev/lib/cmake/llvm/LLVMExports-release.cmake
+        '' + attrs.postInstall;
       });
 
       mlir = pkgs.callPackage ./mlir/default.nix {
+        inherit cmakeBuildType;
         inherit (tpkgs.libllvm) monorepoSrc version;
         buildLlvmTools = tpkgs;
         llvm_meta = llvmPackages.libllvm.meta;
         inherit (tpkgs) libllvm;
-
-        debugVersion = true;
       };
     });
   };
