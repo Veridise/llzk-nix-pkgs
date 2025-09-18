@@ -27,7 +27,6 @@
       },
       "original": {
         "owner": "NixOS",
-        "ref": "e9b7f2f",
         "repo": "nixpkgs",
         "type": "github"
       }

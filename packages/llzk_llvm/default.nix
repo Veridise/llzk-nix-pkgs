@@ -6,10 +6,6 @@ let
   mkPackageBase = pkgs: {
     tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
       libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
-      libllvm = (tpkgsOld.libllvm.override ({
-        # Skip tests since they take a long time to build and run
-        doCheck = false;
-      })).overrideAttrs (attrs: {
         inherit cmakeBuildType;
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
