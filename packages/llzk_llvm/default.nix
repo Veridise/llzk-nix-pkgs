@@ -5,10 +5,7 @@
 let
   mkPackageBase = pkgs: {
     tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
-      libllvm = (tpkgsOld.libllvm.override ({
-        # Skip tests since they take a long time to build and run
-        doCheck = false;
-      })).overrideAttrs (attrs: {
+      libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
         inherit cmakeBuildType;
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
@@ -24,6 +21,9 @@ let
           "-DLLVM_ENABLE_Z3_SOLVER=ON"
         ];
         propagatedBuildInputs = attrs.propagatedBuildInputs ++ [pkgs.z3];
+        # Skip tests since they take a long time to build and run
+        doCheck = false;
+
         postInstall = pkgs.lib.optionalString (cmakeBuildType != "Release") ''
           ln -s $dev/lib/cmake/llvm/LLVMExports-${pkgs.lib.toLower cmakeBuildType}.cmake $dev/lib/cmake/llvm/LLVMExports-release.cmake
         '' + attrs.postInstall;
