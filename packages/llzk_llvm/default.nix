@@ -1,10 +1,16 @@
 { llvmPackages
+, cmakeBuildType ? "Release"
 }:
 
 let
   mkPackageBase = pkgs: {
     tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
       libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
+      libllvm = (tpkgsOld.libllvm.override ({
+        # Skip tests since they take a long time to build and run
+        doCheck = false;
+      })).overrideAttrs (attrs: {
+        inherit cmakeBuildType;
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
           "-DLLVM_TARGETS_TO_BUILD=host"
@@ -21,15 +27,18 @@ let
         propagatedBuildInputs = attrs.propagatedBuildInputs ++ [pkgs.z3];
         # Skip tests since they take a long time to build and run
         doCheck = false;
+
+        postInstall = pkgs.lib.optionalString (cmakeBuildType != "Release") ''
+          ln -s $dev/lib/cmake/llvm/LLVMExports-${pkgs.lib.toLower cmakeBuildType}.cmake $dev/lib/cmake/llvm/LLVMExports-release.cmake
+        '' + attrs.postInstall;
       });
 
       mlir = pkgs.callPackage ./mlir/default.nix {
+        inherit cmakeBuildType;
         inherit (tpkgs.libllvm) monorepoSrc version;
         buildLlvmTools = tpkgs;
         llvm_meta = llvmPackages.libllvm.meta;
         inherit (tpkgs) libllvm;
-
-        debugVersion = true;
       };
     });
   };
