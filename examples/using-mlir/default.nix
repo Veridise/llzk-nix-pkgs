@@ -2,17 +2,20 @@
 , lib
 , cmake
 , ninja
-, mlir
+, mlir_pkg
 }:
 
 stdenv.mkDerivation {
-  pname = "using-mlir-example";
+  pname = "using-mlir-example-${mlir_pkg.cmakeBuildType}";
   version = "0.0.0";
 
   src = lib.cleanSource ./.;
 
-  buildInputs = [ mlir ];
+  buildInputs = [ mlir_pkg ];
   nativeBuildInputs = [ cmake ninja ];
 
-  postInstall = ''touch "$out"'';
+  postInstall = ''
+    touch "$out"
+    echo ">>> MLIR example ${mlir_pkg.cmakeBuildType} build completed successfully! <<<"
+  '';
 }

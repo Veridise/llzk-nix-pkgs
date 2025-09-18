@@ -8,10 +8,16 @@
     overlays.default = final: prev: {
 
       llzk_llvmPackages = (import ./packages/llzk_llvm/default.nix {
-        llvmPackages = final.llvmPackages_18;
+        llvmPackages = final.llvmPackages_20;
+      }) final;
+
+      llzk_llvmPackages_debug = (import ./packages/llzk_llvm/default.nix {
+        llvmPackages = final.llvmPackages_20;
+        cmakeBuildType = "Debug";
       }) final;
 
       mlir = final.llzk_llvmPackages.mlir;
+      mlir_debug = final.llzk_llvmPackages_debug.mlir;
     };
   } // (flake-utils.lib.eachDefaultSystem (system:
     let
@@ -22,13 +28,18 @@
     in
     {
       packages = flake-utils.lib.flattenTree {
-        inherit (pkgs.llzk_llvmPackages) mlir;
+        inherit (pkgs) mlir mlir_debug;
       };
 
       formatter = pkgs.nixpkgs-fmt;
 
       checks = {
-        using-mlir = pkgs.callPackage ./examples/using-mlir {};
+        using-mlir-release = pkgs.callPackage ./examples/using-mlir {
+          mlir_pkg = pkgs.mlir;
+        };
+        using-mlir-debug = pkgs.callPackage ./examples/using-mlir {
+          mlir_pkg = pkgs.mlir_debug;
+        };
       };
     }
   ));
