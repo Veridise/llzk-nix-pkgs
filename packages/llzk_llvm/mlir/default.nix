@@ -108,6 +108,16 @@ stdenv.mkDerivation rec {
       --replace '"mlir-src-sharder"' \""$out"/bin/mlir-src-sharder\" \
       --replace '"mlir-pdll"' \""$out"/bin/mlir-pdll\"
 
+    # Create custom llvm-config script from template
+    mkdir -p "$dev"/bin
+    substitute ${./llvm-config.sh.in} "$dev"/bin/llvm-config \
+      --subst-var-by dev "${placeholder "dev"}" \
+      --subst-var-by out "${placeholder "out"}" \
+      --subst-var-by lib "${placeholder "lib"}" \
+      --subst-var-by version "${version}" \
+      --subst-var-by cmakeBuildType "${cmakeBuildType}"
+    chmod +x "$dev"/bin/llvm-config
+
     ${lib.strings.optionalString enablePythonBindings ''
     # move mlir source code
     mkdir -p $python
