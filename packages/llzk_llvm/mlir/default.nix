@@ -25,7 +25,7 @@ let
   ];
 in
 stdenv.mkDerivation rec {
-  pname = "mlir";
+  pname = "mlir-${lib.toLower cmakeBuildType}";
   inherit version;
 
   src = runCommand "${pname}-src-${version}" { } ''

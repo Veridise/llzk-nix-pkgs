@@ -7,6 +7,7 @@ let
     tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
       libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
         inherit cmakeBuildType;
+        pname = "${attrs.pname or "libllvm"}-${pkgs.lib.toLower cmakeBuildType}";
         cmakeFlags = attrs.cmakeFlags ++ [
           # Skip irrelevant targets
           "-DLLVM_TARGETS_TO_BUILD=host"
