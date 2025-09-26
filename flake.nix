@@ -7,17 +7,17 @@
   outputs = { self, nixpkgs, flake-utils }: {
     overlays.default = final: prev: {
 
-      llzk_llvmPackages = (import ./packages/llzk_llvm/default.nix {
+      llzk-llvmPackages = (import ./packages/llzk_llvm/default.nix {
         llvmPackages = final.llvmPackages_20;
       }) final;
 
-      llzk_llvmPackages_debug = (import ./packages/llzk_llvm/default.nix {
+      llzk-llvmPackages-debug = (import ./packages/llzk_llvm/default.nix {
         llvmPackages = final.llvmPackages_20;
         cmakeBuildType = "Debug";
       }) final;
 
-      mlir = final.llzk_llvmPackages.mlir;
-      mlir_debug = final.llzk_llvmPackages_debug.mlir;
+      mlir = final.llzk-llvmPackages.mlir;
+      mlir-debug = final.llzk-llvmPackages-debug.mlir;
     };
   } // (flake-utils.lib.eachDefaultSystem (system:
     let
@@ -28,7 +28,7 @@
     in
     {
       packages = flake-utils.lib.flattenTree {
-        inherit (pkgs) mlir mlir_debug;
+        inherit (pkgs) mlir mlir-debug;
       };
 
       formatter = pkgs.nixpkgs-fmt;
@@ -38,7 +38,7 @@
           mlir_pkg = pkgs.mlir;
         };
         using-mlir-debug = pkgs.callPackage ./examples/using-mlir {
-          mlir_pkg = pkgs.mlir_debug;
+          mlir_pkg = pkgs.mlir-debug;
         };
       };
     }
