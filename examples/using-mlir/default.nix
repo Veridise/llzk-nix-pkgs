@@ -6,7 +6,7 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "using-mlir-example-${mlir_pkg.cmakeBuildType}";
+  pname = "using-mlir-example-${lib.toLower mlir_pkg.cmakeBuildType}";
   version = "0.0.0";
 
   src = lib.cleanSource ./.;
