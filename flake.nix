@@ -29,7 +29,7 @@
     {
       packages = flake-utils.lib.flattenTree {
         inherit (pkgs) mlir mlir-debug;
-        # Prevent use of libllvm and llvm from nixpkgs, which will have 
+        # Prevent use of libllvm and llvm from nixpkgs, which will have
         # different versions than mlir/llvm built here.
         inherit (pkgs.llzk-llvmPackages) libllvm llvm;
       };
