@@ -3,8 +3,8 @@
 }:
 
 let
-  mkPackageBase = pkgs: {
-    tools = llvmPackages.tools.extend (tpkgs: tpkgsOld: {
+  mkPackageBase = pkgs: (
+    llvmPackages.overrideScope (tpkgs: tpkgsOld: {
       libllvm = tpkgsOld.libllvm.overrideAttrs (attrs: {
         inherit cmakeBuildType;
         pname = "${attrs.pname or "libllvm"}-${pkgs.lib.toLower cmakeBuildType}";
@@ -33,15 +33,11 @@ let
       mlir = pkgs.callPackage ./mlir/default.nix {
         inherit cmakeBuildType;
         inherit (tpkgs.libllvm) monorepoSrc version;
-        buildLlvmTools = tpkgs;
+        buildLlvmPackages = tpkgs;
         llvm_meta = llvmPackages.libllvm.meta;
         inherit (tpkgs) libllvm;
       };
-    });
-  };
-
-  mkPackage = pkgs:
-    let base = mkPackageBase pkgs;
-    in base // { inherit (base) tools; } // (pkgs.lib.attrsets.removeAttrs base.tools [ "extend" ]);
+    })
+  );
 in
-mkPackage
+mkPackageBase

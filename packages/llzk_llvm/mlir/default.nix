@@ -12,7 +12,7 @@
 , enableShared ? !stdenv.hostPlatform.isStatic
 , cmakeBuildType ? "Release"
 , enablePythonBindings ? false
-, buildLlvmTools
+, buildLlvmPackages
 , libxml2
 , libllvm
 }:
@@ -76,8 +76,8 @@ stdenv.mkDerivation rec {
     "-DMLIR_STANDALONE_BUILD=TRUE"
     "-DLLVM_TARGETS_TO_BUILD=host"
     "-DLLVM_ENABLE_DUMP=ON"
-    "-DMLIR_TABLEGEN_EXE=${buildLlvmTools.tblgen}/bin/mlir-tblgen"
-    "-DLLVM_TABLEGEN_EXE=${buildLlvmTools.tblgen}/bin/llvm-tblgen"
+    "-DMLIR_TABLEGEN_EXE=${buildLlvmPackages.tblgen}/bin/mlir-tblgen"
+    "-DLLVM_TABLEGEN_EXE=${buildLlvmPackages.tblgen}/bin/llvm-tblgen"
 
   ] ++ lib.optionals enablePythonBindings [
     # Enable Python bindings
